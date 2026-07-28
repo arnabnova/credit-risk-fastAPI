@@ -1,6 +1,8 @@
-streamlit
-scikit-learn
+fastapi
+uvicorn[standard]
+scikit-learn==1.8.0
 pandas
 numpy
 joblib
 pyarrow
+pydantic
