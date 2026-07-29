@@ -76,6 +76,12 @@ def preprocess(df: pd.DataFrame, model_data: dict) -> np.ndarray:
     scaler        = model_data["scaler"]
     cols_to_scale = model_data["cols_to_scale"]
 
+    print("── DEBUG: preprocess() ──")
+    print("Input df columns before scaling:", list(df.columns))
+    print("Input df values:\n", df.to_dict(orient="records"))
+    print("Expected cols_to_scale:", cols_to_scale)
+    print("Expected model features:", features)
+
     # Add ALL columns the scaler expects (not just model features)
     for col in cols_to_scale:
         if col not in df.columns:
@@ -89,8 +95,13 @@ def preprocess(df: pd.DataFrame, model_data: dict) -> np.ndarray:
         if col not in df.columns:
             df[col] = 0
 
+    final = df[features]
+    print("Final df sent to model:\n", final.to_dict(orient="records"))
+    print("Final array:", final.values)
+    print("─────────────────────────")
+
     # Return only the final model features in the correct order
-    return df[features].values
+    return final.values
 # ── Prediction ─────────────────────────────────────────────────────────────────
 
 def predict(input_array: np.ndarray, model_data: dict):

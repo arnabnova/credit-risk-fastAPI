@@ -55,6 +55,9 @@ def health():
 @app.post("/predict", response_model=LoanOutput)
 def get_prediction(input: LoanInput):
     try:
+        print("── DEBUG: /predict received ──")
+        print(input.dict())
+
         df = build_input_df(
             age=input.age,
             loan_tenure_months=input.loan_tenure_months,
@@ -67,8 +70,11 @@ def get_prediction(input: LoanInput):
             loan_purpose=input.loan_purpose,
             loan_type=input.loan_type,
         )
+        print("build_input_df() output columns:", list(df.columns))
+
         input_array = preprocess(df, model_data)
         proba, credit_score = predict(input_array, model_data)
+        print(f"DEBUG: raw proba={proba}, credit_score={credit_score}")
 
         risk_label, _ = get_risk_level(proba)
         credit_rating, rating_color = get_credit_rating(credit_score)
@@ -83,4 +89,5 @@ def get_prediction(input: LoanInput):
             decision=decision,
         )
     except Exception as e:
+        print("DEBUG ERROR:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
