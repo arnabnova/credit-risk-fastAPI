@@ -102,18 +102,6 @@ def preprocess(df: pd.DataFrame, model_data: dict) -> np.ndarray:
 
     # Return only the final model features in the correct order
     return final.values
-# ── Prediction ─────────────────────────────────────────────────────────────────
-
-def predict(input_array: np.ndarray, model_data: dict):
-    """
-    Run inference and return (default_probability, credit_score).
-    default_probability : float in [0, 1]
-    credit_score        : int   in [300, 850]
-    """
-    model = model_data["model"]
-    proba = float(model.predict_proba(input_array)[0][1])
-    credit_score = int(np.clip(850 - proba * 550, 300, 850))
-    return proba, credit_score
 
 
 # ── Label helpers ──────────────────────────────────────────────────────────────
