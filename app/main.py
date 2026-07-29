@@ -30,9 +30,9 @@ class LoanInput(BaseModel):
     age: int = Field(..., ge=18, le=100)
     loan_tenure_months: int = Field(..., gt=0)
     number_of_open_accounts: int = Field(..., ge=0)
-    credit_utilization_ratio: float = Field(..., ge=0, le=1)
+    credit_utilization_ratio: float = Field(..., ge=0, le=100)
     loan_income_ratio: float = Field(..., ge=0)
-    delinquency_ratio: float = Field(..., ge=0, le=1)
+    delinquency_ratio: float = Field(..., ge=0, le=100)
     avg_dpd_per_delinquency: float = Field(..., ge=0)
     residence_type: Literal["Owned", "Rented", "Mortgage"]
     loan_purpose: Literal["Home", "Auto", "Personal", "Education"]
