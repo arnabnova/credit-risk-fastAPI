@@ -45,19 +45,12 @@ class LoanOutput(BaseModel):
     credit_rating: str
     credit_rating_color: str
     decision: str
-
-# ── Routes ───────────────────────────────────────────────────────────────
-
-@app.get("/")
-def health():
-    return {"status": "ok"}
+    debug_columns: list[str] | None = None
+    debug_final_row: dict | None = None
 
 @app.post("/predict", response_model=LoanOutput)
 def get_prediction(input: LoanInput):
     try:
-        print("── DEBUG: /predict received ──")
-        print(input.dict())
-
         df = build_input_df(
             age=input.age,
             loan_tenure_months=input.loan_tenure_months,
@@ -70,11 +63,10 @@ def get_prediction(input: LoanInput):
             loan_purpose=input.loan_purpose,
             loan_type=input.loan_type,
         )
-        print("build_input_df() output columns:", list(df.columns))
+        debug_cols = list(df.columns)
 
         input_array = preprocess(df, model_data)
         proba, credit_score = predict(input_array, model_data)
-        print(f"DEBUG: raw proba={proba}, credit_score={credit_score}")
 
         risk_label, _ = get_risk_level(proba)
         credit_rating, rating_color = get_credit_rating(credit_score)
@@ -87,7 +79,10 @@ def get_prediction(input: LoanInput):
             credit_rating=credit_rating,
             credit_rating_color=rating_color,
             decision=decision,
+            debug_columns=debug_cols,
+            debug_final_row={
+                col: float(val) for col, val in zip(model_data["features"], input_array[0])
+            },
         )
     except Exception as e:
-        print("DEBUG ERROR:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
